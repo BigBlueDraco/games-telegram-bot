@@ -1,0 +1,43 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                Int     @id @default(autoincrement())
+  telegram_chat_id  String  @unique
+  telegram_username String
+  name              String
+  games             Game[]
+  masterId          Int
+  master            Master?
+}
+
+model Master {
+  userId     Int    @id
+  user       User   @relation(fields: [userId], references: [id])
+  games      Game[]
+  permission String
+}
+
+model Game {
+  id         Int      @id
+  masterId   Int
+  master     Master   @relation(fields: [masterId], references: [userId])
+  players    User[]
+  locationId Int
+  location   Location @relation(fields: [locationId], references: [id])
+}
+
+model Location {
+  id      Int     @id
+  lat     String?
+  lon     String?
+  title   String
+  address String
+  Game    Game[]
+}
